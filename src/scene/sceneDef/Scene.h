@@ -12,6 +12,7 @@ public:
     Player* player = nullptr;
     std::vector<GameObject*> gameObjects;
     std::vector<MovingObject*> movingObjects;
+    bool playerDamagedLastFrame = false;
     float spawnCooldown = 0.0f;
     Renderable enemyMesh;
 

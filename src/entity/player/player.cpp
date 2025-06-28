@@ -4,8 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-Player::Player(int width, int height, Renderable playerMesh, float speed, glm::vec3 position)
-    : width(width), height(height), speed(speed), playerObj(std::move(playerMesh)), playerCamera(width, height, position + cameraOffset)
+Player::Player(int width, int height, Renderable playerMesh, float speed, int health, glm::vec3 position)
+    : width(width), height(height), speed(speed), health(health), playerObj(std::move(playerMesh)), playerCamera(width, height, position + cameraOffset)
 {
     playerObj.position = position;
     playerObj.orientation = glm::vec3(0.0f, 0.0f, 1.0f);

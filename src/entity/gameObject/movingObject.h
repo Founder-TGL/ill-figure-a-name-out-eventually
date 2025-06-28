@@ -8,22 +8,11 @@ public:
     glm::vec3 velocity;
     float lifetime = 0.0f;
     float age = 0.0f;
+    int damage = 1;
 
-    MovingObject(Renderable mesh, glm::vec3 spawnPos, glm::vec3 vel, float life)
-        : GameObject(std::move(mesh)), velocity(vel), lifetime(life)
-    {
-        position = spawnPos;
-        GameObject::update();
-    }
+    MovingObject(Renderable mesh, glm::vec3 spawnPos, glm::vec3 vel, float life);
 
-    bool update(float deltaTime) {
-        age += deltaTime;
-        if (age > lifetime) return false;
-
-        position += velocity * deltaTime;
-        GameObject::update(); // sync mesh + hitbox
-        return true;
-    }
+    bool update(float deltaTime);
 };
 
 

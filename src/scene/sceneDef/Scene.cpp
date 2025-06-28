@@ -27,6 +27,7 @@ void Scene::update(float deltaTime, GLFWwindow* window) {
         spawnMovingTarget();
         spawnCooldown = 3.0f;
     }
+
 }
 
 
@@ -45,6 +46,16 @@ void Scene::attemptMovePlayer(glm::vec3 proposedMove) {
         if (Hitbox::doOBBsIntersect(trial, obj->getOBB())) {
             std::cout << "🟥 Movement blocked by object at: " << glm::to_string(obj->position) << "\n";
             return;
+        }
+    }
+    for (MovingObject* obj : movingObjects) {
+        if (Hitbox::doOBBsIntersect(trial, obj->getOBB())) {
+            if(!playerDamagedLastFrame){
+                player->health -= obj->damage;
+                std::cout << "player damaged by: " << obj->damage << " points\n";
+                playerDamagedLastFrame = true;
+            }
+            
         }
     }
 
@@ -68,10 +79,12 @@ void Scene::draw(Shader& shader) {
 void Scene::spawnMovingTarget() {
     glm::vec3 spawnPos = player->playerObj.position + glm::vec3(rand()%20 - 10, 0, rand()%20 - 10);
     glm::vec3 toPlayer = glm::normalize(player->playerObj.position - spawnPos);
-    float speed = 1.2f;
+    float speed = 5.0f;
     float life = 8.0f;
 
+    toPlayer *= speed;
+
     Renderable mobMesh = enemyMesh;
-movingObjects.push_back(new MovingObject(enemyMesh, spawnPos, glm::vec3(0.0f, 0.0f, 1.0f), 3));
+movingObjects.push_back(new MovingObject(enemyMesh, spawnPos, toPlayer, life));
 
 }

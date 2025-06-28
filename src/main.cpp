@@ -46,7 +46,7 @@ int main() {
     Renderable pyramid(pyramidVertices, pyramidVerticesSize, pyramidIndices, pyramidIndicesSize);
     Renderable cube(cubeVertices, cubeVerticesSize, cubeIndices, cubeIndicesSize);
 	Renderable sphereMesh(sphereVertices, sphereVerticesSize, sphereIndices, sphereIndicesSize);
-    Player* player = new Player(width, height, pyramid, 0.01f, glm::vec3(0, 0, -2));
+    Player* player = new Player(width, height, pyramid, 0.01f, 10, glm::vec3(0, 0, -2));
     GameObject* cubeObj = new GameObject(cube);
     cubeObj->setPosition(glm::vec3(1.5f, 0.0f, -2.0f));
     cubeObj->update();
