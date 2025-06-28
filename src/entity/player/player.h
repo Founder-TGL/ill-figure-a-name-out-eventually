@@ -10,7 +10,7 @@ class Player
         int width;
         int height;
         float speed;
-        glm::vec3 cameraOffset = glm::vec3(0.0f, 5.0f, 5.0f);
+        glm::vec3 cameraOffset = glm::vec3(0.0f, 2.0f, -5.0f);
         Camera playerCamera;
         Renderable playerMesh;
         bool firstClick = true;

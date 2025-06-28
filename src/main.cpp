@@ -1,3 +1,4 @@
+#define GLM_ENABLE_EXPERIMENTAL
 #include<iostream>
 #include<glad/glad.h>
 #include<glm/glm.hpp>
@@ -5,6 +6,7 @@
 #include<glm/gtc/type_ptr.hpp>
 #include<GLFW/glfw3.h>
 #include<filesystem>
+#include <glm/gtx/string_cast.hpp>
 
 
 
@@ -112,14 +114,21 @@ int main()
 		// camera.Inputs(window);
         player.Inputs(window);
 		player.playerCamera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix");
+		std::cout << "Camera Up: " << glm::to_string(player.playerCamera.Up) << std::endl;
 
-		glm::mat4 model = glm::mat4(1.0f);
-		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
+		// glm::mat4 model = glm::mat4(1.0f);
+		// int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);		//sets the draw to be solid object (as its set else for the spacetime grid)
 
         // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
         player.playerMesh.Draw(shaderProgram);
         cubeMesh.Draw(shaderProgram);
+
+		std::cout << "Cam Pos: " << glm::to_string(player.playerCamera.position) << "\n";
+		std::cout << "mesh Pos: " << glm::to_string(player.playerMesh.position) << "\n";
+		std::cout << "Cam oren: " << glm::to_string(player.playerCamera.orientation) << "\n";
+		std::cout << "mesh oren: " << glm::to_string(player.playerMesh.orientation) << "\n";
 
 		glfwSwapBuffers(window);		// Swap the back buffer with the front buffer
 		glfwPollEvents();		// Take care of all GLFW events

@@ -21,9 +21,9 @@ Renderable::Renderable(float* vertices, size_t vertSize, GLuint* indices, size_t
  void Renderable::Draw(Shader& shader) {
         glm::mat4 model = glm::mat4(1.0f);
 
-        model = glm::rotate(model, orientation.x, glm::vec3(1.0f, 0.0f, 0.0f)); // pitch
-        model = glm::rotate(model, orientation.y, glm::vec3(0.0f, 1.0f, 0.0f)); // yaw
-        model = glm::rotate(model, orientation.z, glm::vec3(0.0f, 0.0f, 1.0f)); // roll
+        // model = glm::rotate(model, orientation.x, glm::vec3(1.0f, 0.0f, 0.0f)); // pitch
+        // model = glm::rotate(model, orientation.y, glm::vec3(0.0f, 1.0f, 0.0f)); // yaw
+        // model = glm::rotate(model, orientation.z, glm::vec3(0.0f, 0.0f, 1.0f)); // roll
 
         model = glm::translate(model, position);
 

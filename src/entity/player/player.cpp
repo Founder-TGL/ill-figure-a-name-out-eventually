@@ -8,11 +8,10 @@ Player::Player(int width, int height, Renderable playerMesh, float speed, glm::v
     : width(width), height(height), speed(speed), playerMesh(playerMesh),playerCamera(width, height, position + cameraOffset)
 {
     this->playerMesh.position = position;
-    playerMesh.position = position;
-    playerMesh.orientation = glm::vec3(0.0f, 0.0f, -1.0f);
+    this->playerMesh.orientation = glm::vec3(0.0f, 0.0f, 1.0f);
     glm::vec3 viewDir = playerMesh.position - playerCamera.position;
     playerCamera.orientation = glm::normalize(glm::vec3(viewDir.x, viewDir.y, 0.0f));
-
+    moveCamera();
 }
 
 void Player::Inputs(GLFWwindow* window)
@@ -76,16 +75,21 @@ void Player::Inputs(GLFWwindow* window)
 
 void Player::moveCamera()
 {
-    playerCamera.position = playerMesh.position + cameraOffset;
+  // 1) fixed offset:
+  playerCamera.position = playerMesh.position + cameraOffset;
 
-    // Recalculate view direction without tilt
-    glm::vec3 viewDir = playerMesh.position - playerCamera.position;
-    viewDir.y = 0.0f; // flatten tilt
-    viewDir = glm::normalize(viewDir);
+  // 2) forward flat:
+  glm::vec3 forward = playerMesh.position - playerCamera.position;
+  forward.y = 0.0f;
+  forward = glm::normalize(forward);
 
-    playerCamera.orientation = viewDir;
+  // 3) no‐roll basis:
+  glm::vec3 worldUp  = glm::vec3(0,1,0);
+  glm::vec3 right    = glm::normalize(glm::cross(worldUp, forward));
+  glm::vec3 cameraUp = glm::cross(forward, right);
+
+  // 4) store for Matrix():
+  playerCamera.orientation = forward;
+
  
-    std::cout << "Cam Pos: " << glm::to_string(playerCamera.position) << "\n";
-std::cout << "Orientation: " << glm::to_string(playerCamera.orientation) << "\n";
-std::cout << "Up Vector: " << glm::to_string(playerCamera.Up) << "\n";
 }

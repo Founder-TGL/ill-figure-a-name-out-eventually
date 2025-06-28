@@ -21,26 +21,6 @@ public:
 	glm::vec3 orientation = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	// // Prevents the camera from jumping around when first clicking left click
-	// bool firstClick = true;
-	// // if the simulation is paused
-	// bool paused = false;
-	// bool pausePressedLastFrame = false; 
-	// //if the mouse should be locked to the frame
-	// bool mouseLocked = false;
-	// //checks whether debug mode is enabled
-	// bool debugEnabled = false;
-	// bool debugPressedLastFrame = false; 
-	// //checks whether reset button was pressed
-	// bool resetPressedLastFrame = false; 
-	// //checks if spawn was pressed last frame
-	// Renderable* pyramidRenderable = nullptr;
-	// Renderable* cubeRenderable = nullptr;
-	// Renderable* sphereRenderable = nullptr;
-	// bool spawn1PressedLastFrame = false;
-	// bool spawn2PressedLastFrame = false;
-	// bool spawn3PressedLastFrame = false;
-
 
 	//debug values
 
