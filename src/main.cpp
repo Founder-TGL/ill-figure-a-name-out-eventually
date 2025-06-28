@@ -70,7 +70,7 @@ int main()
 
 	float time, currentTime = glfwGetTime();
 
-    Player player(width, height, pyramidMesh, glm::vec3(0.0f, 0.0f, -2.0f));
+    Player player(width, height, pyramidMesh, 0.1f, glm::vec3(0.0f, 0.0f, -2.0f));
 	// camera.pyramidRenderable = &pyramidMesh;
 	// camera.cubeRenderable = &cubeMesh;
 	// camera.sphereRenderable = &sphereMesh;

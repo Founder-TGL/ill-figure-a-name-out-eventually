@@ -16,7 +16,7 @@ class Player
         bool firstClick = true;
         bool mouseLocked = false;
 
-        Player(int width, int height, Renderable playerMesh, glm::vec3 position = {1.0f, 1.0f, 1.0f});
+        Player(int width, int height, Renderable playerMesh, float speed = 0.1f, glm::vec3 position = {1.0f, 1.0f, 1.0f});
 
         void Inputs(GLFWwindow* window);
         void moveCamera();

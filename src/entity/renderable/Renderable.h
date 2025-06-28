@@ -17,7 +17,7 @@ public:
     glm::vec3 position;
     glm::vec3 orientation;
 
-    Renderable(float* vertices, size_t vertSize, GLuint* indices, size_t idxSize, glm::vec3 position = {0.0f, 0.0f, 0.0f}, glm::vec3 orientation = {0.0f, 0.0f, 0.0f});
+    Renderable(float* vertices, size_t vertSize, GLuint* indices, size_t idxSize, glm::vec3 position = {0.0f, 0.0f, 0.0f}, glm::vec3 orientation = {0.0f, 0.0f, 1.0f});
 
     void Draw(Shader& shader);
 };
