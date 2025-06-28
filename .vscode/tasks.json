@@ -28,6 +28,7 @@
                 "${workspaceFolder}/src/entity/player/player.cpp",
                 "${workspaceFolder}/src/entity/hitBox/hitBox.cpp",
                 "${workspaceFolder}/src/entity/gameObject/gameObject.cpp",
+                "${workspaceFolder}/src/entity/gameObject/movingObject.cpp",
                 "${workspaceFolder}/src/scene/sceneDef/Scene.cpp",
 
 

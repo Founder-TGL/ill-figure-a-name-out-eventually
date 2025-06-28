@@ -4,8 +4,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
+Scene::Scene() : enemyMesh(Renderable(cubeVertices, cubeVerticesSize, cubeIndices, cubeIndicesSize)){}
 
-void Scene::update(GLFWwindow* window) {
+void Scene::update(float deltaTime, GLFWwindow* window) {
     if (!player) return;
 
     // Update player movement (input handled externally)
@@ -15,6 +16,16 @@ void Scene::update(GLFWwindow* window) {
     if (glm::length(direction) > 0.001f) {
     glm::vec3 moveVec = player->speed * glm::normalize(direction);
     attemptMovePlayer(moveVec);
+    }
+    for (int i = movingObjects.size() - 1; i >= 0; --i) {
+    if (!movingObjects[i]->update(deltaTime))
+        movingObjects.erase(movingObjects.begin() + i);
+    }
+
+        spawnCooldown -= deltaTime;
+    if (spawnCooldown <= 0.0f) {
+        spawnMovingTarget();
+        spawnCooldown = 3.0f;
     }
 }
 
@@ -50,4 +61,17 @@ void Scene::draw(Shader& shader) {
 
     for (auto* obj : gameObjects)
         obj->Draw(shader);
+    for (auto& mob : movingObjects)
+        mob->Draw(shader);
+}
+
+void Scene::spawnMovingTarget() {
+    glm::vec3 spawnPos = player->playerObj.position + glm::vec3(rand()%20 - 10, 0, rand()%20 - 10);
+    glm::vec3 toPlayer = glm::normalize(player->playerObj.position - spawnPos);
+    float speed = 1.2f;
+    float life = 8.0f;
+
+    Renderable mobMesh = enemyMesh;
+movingObjects.push_back(new MovingObject(enemyMesh, spawnPos, glm::vec3(0.0f, 0.0f, 1.0f), 3));
+
 }

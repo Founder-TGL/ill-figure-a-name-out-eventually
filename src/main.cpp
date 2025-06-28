@@ -71,7 +71,7 @@ int main() {
         }
 
         // Update
-        scene.update(window);
+        scene.update(deltaTime, window);
 
         // Render
         glClearColor(0.0f, 0.0f, 0.01f, 1.0f);
