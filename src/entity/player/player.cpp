@@ -8,8 +8,11 @@ Player::Player(int width, int height, Renderable playerMesh, float speed, glm::v
     : width(width), height(height), speed(speed), playerMesh(playerMesh),playerCamera(width, height, position + cameraOffset)
 {
     this->playerMesh.position = position;
-    playerCamera.orientation = glm::normalize(playerMesh.position - playerCamera.position);
-    playerMesh.orientation = glm::vec3(0.0f, 1.0f, 0.0f);
+    playerMesh.position = position;
+    playerMesh.orientation = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 viewDir = playerMesh.position - playerCamera.position;
+    playerCamera.orientation = glm::normalize(glm::vec3(viewDir.x, viewDir.y, 0.0f));
+
 }
 
 void Player::Inputs(GLFWwindow* window)
@@ -21,10 +24,10 @@ void Player::Inputs(GLFWwindow* window)
     glm::vec3 cameraOrientation = playerCamera.orientation;
     glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::vec3 direction(0.0f, 0.0f, 0.0f);
-    std::cout << "Camera Pos: " << glm::to_string(playerCamera.position)
-          << " | Camera Dir: " << glm::to_string(playerCamera.orientation)
-          << " | Player Pos: " << glm::to_string(playerMesh.position) << std::endl;
-              std::cout << "Offset length: " << glm::length(cameraOffset) << std::endl;
+    // std::cout << "Camera Pos: " << glm::to_string(playerCamera.position)
+    //       << " | Camera Dir: " << glm::to_string(playerCamera.orientation)
+    //       << " | Player Pos: " << glm::to_string(playerMesh.position) << std::endl;
+    //           std::cout << "Offset length: " << glm::length(cameraOffset) << std::endl;
 
 
 
@@ -43,7 +46,7 @@ void Player::Inputs(GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
        direction +=  glm::normalize(glm::cross(playerOrientation, Up));
-        keyPressed = true;
+    keyPressed = true;
     }
 
     if (keyPressed && glm::length(direction) > 0.001f) {
@@ -74,8 +77,15 @@ void Player::Inputs(GLFWwindow* window)
 void Player::moveCamera()
 {
     playerCamera.position = playerMesh.position + cameraOffset;
-    glm::vec3 viewDir = playerMesh.position - playerCamera.position;
-    viewDir.y = 0.0f; // flatten to avoid downward tilt
-    playerCamera.orientation = glm::normalize(viewDir);
 
+    // Recalculate view direction without tilt
+    glm::vec3 viewDir = playerMesh.position - playerCamera.position;
+    viewDir.y = 0.0f; // flatten tilt
+    viewDir = glm::normalize(viewDir);
+
+    playerCamera.orientation = viewDir;
+ 
+    std::cout << "Cam Pos: " << glm::to_string(playerCamera.position) << "\n";
+std::cout << "Orientation: " << glm::to_string(playerCamera.orientation) << "\n";
+std::cout << "Up Vector: " << glm::to_string(playerCamera.Up) << "\n";
 }
