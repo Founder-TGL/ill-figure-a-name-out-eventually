@@ -11,7 +11,8 @@ class Player
         int width;
         int height;
         float speed;
-        glm::vec3 cameraOffset = glm::vec3(0.0f, 2.0f, -6.0f);
+        float followDist   = 5.0f;
+        float followHeight = 2.0f; 
         GameObject playerObj;
         Camera playerCamera;
         bool firstClick = true;
@@ -21,12 +22,14 @@ class Player
         float damageCooldownTime;
         glm::vec3 startPos = glm::vec3(0.0f, 0.0f, 0.0f);
         int startingHealth;
+        float yaw = 0.0f;
 
         Player(int width, int height, Renderable playerMesh, float speed = 0.1f, int health = 10, glm::vec3 position = {1.0f, 1.0f, 1.0f}, float damageCooldown = 0.5f);
 
-        glm::vec3 pollMovementInput(GLFWwindow* window);
+        glm::vec3 Input(float deltaTime, GLFWwindow* window);
         void moveCamera();
-        bool isDead() const { return health <= 0; }
+        bool isDead() const { return health <= 0; std::cout << "player health " << health << std::endl;
+}
 
 };
 

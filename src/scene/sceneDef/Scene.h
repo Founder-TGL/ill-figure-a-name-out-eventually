@@ -15,7 +15,7 @@ public:
     bool playerDamagedLastFrame = false;
     float spawnCooldown = 0.0f;
     Renderable enemyMesh;
-    bool isPlayerDead;
+    bool isPlayerDead = false;
 
     Scene();
 

@@ -1,4 +1,9 @@
 #include "Renderable.h"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>    
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <iostream>
 #include<glad/glad.h>
 #include<glm/glm.hpp>
@@ -27,6 +32,13 @@ Renderable::Renderable(float* vertices, size_t vertSize, GLuint* indices, size_t
 
         
         model = glm::translate(model, position);
+
+        // 3) build a "look‐at" quaternion turning +Z → forward
+        glm::vec3 worldUp{0,1,0};
+        glm::quat rot = glm::quatLookAt(glm::normalize(orientation), worldUp);
+        model *= glm::toMat4(rot);
+
+
         model = glm::scale(model, scale);
 
         int modelLoc = glGetUniformLocation(shader.ID, "model");
