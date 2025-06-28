@@ -15,16 +15,19 @@ public:
     bool playerDamagedLastFrame = false;
     float spawnCooldown = 0.0f;
     Renderable enemyMesh;
+    bool isPlayerDead;
 
     Scene();
 
-    void setPlayer(Player* p) { player = p; }
+    void setPlayer(Player* p) { player = p;}
     void addObject(GameObject* obj) { gameObjects.push_back(obj); }
 
     void update(float deltaTime, GLFWwindow* window); // handles logic & collision
     void attemptMovePlayer(glm::vec3 proposedMove);
     void draw(Shader& shader);
     void spawnMovingTarget();
+
+    void handlePlayerDeath();
 };
 
 

@@ -9,11 +9,33 @@ Scene::Scene() : enemyMesh(Renderable(cubeVertices, cubeVerticesSize, cubeIndice
 void Scene::update(float deltaTime, GLFWwindow* window) {
     if (!player) return;
 
+
+    isPlayerDead = player->isDead();
+    if (isPlayerDead){handlePlayerDeath(); std::cout << "restarting game...\n";}
+
+
     // Update player movement (input handled externally)
     player->playerObj.update();
 
+
+    const auto& playerOBB = player->playerObj.getOBB();
+
+    // Step cooldown
+    player->damageCooldown -= deltaTime;
+    player->damageCooldown = std::max(0.0f, player->damageCooldown);
+
+    for (MovingObject* obj : movingObjects) {
+        if (Hitbox::doOBBsIntersect(playerOBB, obj->getOBB()) && player->damageCooldown <= 0.0f) {
+            player->health -= obj->damage;
+            std::cout << "🔥 player hit for " << obj->damage << " hp\n";
+            player->damageCooldown = player->damageCooldownTime; // seconds of invincibility
+            break;
+        }
+    }
+
     glm::vec3 direction = player->pollMovementInput(window); 
-    if (glm::length(direction) > 0.001f) {
+    if (glm::length(direction) > 0.001f) 
+    {
     glm::vec3 moveVec = player->speed * glm::normalize(direction);
     attemptMovePlayer(moveVec);
     }
@@ -27,6 +49,7 @@ void Scene::update(float deltaTime, GLFWwindow* window) {
         spawnMovingTarget();
         spawnCooldown = 3.0f;
     }
+
 
 }
 
@@ -48,14 +71,11 @@ void Scene::attemptMovePlayer(glm::vec3 proposedMove) {
             return;
         }
     }
+    
     for (MovingObject* obj : movingObjects) {
         if (Hitbox::doOBBsIntersect(trial, obj->getOBB())) {
-            if(!playerDamagedLastFrame){
-                player->health -= obj->damage;
-                std::cout << "player damaged by: " << obj->damage << " points\n";
-                playerDamagedLastFrame = true;
-            }
-            
+            std::cout << "🟥 Movement blocked by object at: " << glm::to_string(obj->position) << "\n";
+            return;
         }
     }
 
@@ -87,4 +107,9 @@ void Scene::spawnMovingTarget() {
     Renderable mobMesh = enemyMesh;
 movingObjects.push_back(new MovingObject(enemyMesh, spawnPos, toPlayer, life));
 
+}
+
+void Scene::handlePlayerDeath(){
+    player->playerObj.position = player->startPos;
+    player->health = player->startingHealth;
 }

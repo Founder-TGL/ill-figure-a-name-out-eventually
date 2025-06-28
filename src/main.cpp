@@ -46,7 +46,7 @@ int main() {
     Renderable pyramid(pyramidVertices, pyramidVerticesSize, pyramidIndices, pyramidIndicesSize);
     Renderable cube(cubeVertices, cubeVerticesSize, cubeIndices, cubeIndicesSize);
 	Renderable sphereMesh(sphereVertices, sphereVerticesSize, sphereIndices, sphereIndicesSize);
-    Player* player = new Player(width, height, pyramid, 0.01f, 10, glm::vec3(0, 0, -2));
+    Player* player = new Player(width, height, pyramid, 0.01f, 10, glm::vec3(0, 0, -2), 1.0f);
     GameObject* cubeObj = new GameObject(cube);
     cubeObj->setPosition(glm::vec3(1.5f, 0.0f, -2.0f));
     cubeObj->update();
@@ -74,7 +74,10 @@ int main() {
         scene.update(deltaTime, window);
 
         // Render
-        glClearColor(0.0f, 0.0f, 0.01f, 1.0f);
+        if (scene.isPlayerDead)
+            glClearColor(0.4f, 0.0f, 0.0f, 1.0f); // blood red
+        else
+            glClearColor(0.0f, 0.0f, 0.01f, 1.0f); // normal background
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shaderProgram.Activate();
         player->playerCamera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix");
