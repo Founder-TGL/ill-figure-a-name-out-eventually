@@ -3,6 +3,7 @@
 
 #include "Camera.h"
 #include "Renderable.h"
+#include "gameObject.h"
 
 class Player
 {
@@ -11,8 +12,8 @@ class Player
         int height;
         float speed;
         glm::vec3 cameraOffset = glm::vec3(0.0f, 2.0f, -6.0f);
+        GameObject playerObj;
         Camera playerCamera;
-        Renderable playerMesh;
         bool firstClick = true;
         bool mouseLocked = false;
 
@@ -20,6 +21,7 @@ class Player
 
         void Inputs(GLFWwindow* window);
         void moveCamera();
+    private:
 
 };
 

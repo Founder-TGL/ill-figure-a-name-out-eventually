@@ -73,10 +73,10 @@ int main()
 	float time, currentTime = glfwGetTime();
 
     Player player(width, height, pyramidMesh, 0.1f, glm::vec3(0.0f, 0.0f, -2.0f));
-	// camera.pyramidRenderable = &pyramidMesh;
-	// camera.cubeRenderable = &cubeMesh;
-	// camera.sphereRenderable = &sphereMesh;
-
+	GameObject cubeObject(cubeMesh);
+	cubeObject.setPosition(glm::vec3(1.5f, 0.0f, -2.0f)); // or wherever you want the cube
+	cubeObject.setScale(glm::vec3(1.0f));
+	cubeObject.update();
 
 	float lastTime = glfwGetTime();
 
@@ -89,10 +89,6 @@ int main()
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 
-		// if (!camera.paused)		//pauses the simmulation
-		// {
-			
-		// }
 		if (player.mouseLocked)		//locks the mouse to the center of screen
 		{
 			double mouseX;
@@ -114,21 +110,19 @@ int main()
 		// camera.Inputs(window);
         player.Inputs(window);
 		player.playerCamera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix");
-		std::cout << "Camera Up: " << glm::to_string(player.playerCamera.Up) << std::endl;
 
-		// glm::mat4 model = glm::mat4(1.0f);
-		// int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
-		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);		//sets the draw to be solid object (as its set else for the spacetime grid)
+		if (Hitbox::doOBBsIntersect(player.playerObj.getOBB(), cubeObject.getOBB())) {
+    		std::cout << "🎯 Collision detected between player and cube!\n";
+		}
 
-        // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-        player.playerMesh.Draw(shaderProgram);
-        cubeMesh.Draw(shaderProgram);
+        player.playerObj.Draw(shaderProgram);
+        cubeObject.Draw(shaderProgram);
 
-		std::cout << "Cam Pos: " << glm::to_string(player.playerCamera.position) << "\n";
-		std::cout << "mesh Pos: " << glm::to_string(player.playerMesh.position) << "\n";
-		std::cout << "Cam oren: " << glm::to_string(player.playerCamera.orientation) << "\n";
-		std::cout << "mesh oren: " << glm::to_string(player.playerMesh.orientation) << "\n";
+		// std::cout << "Cam Pos: " << glm::to_string(player.playerCamera.position) << "\n";
+		// std::cout << "mesh Pos: " << glm::to_string(player.playerObj.position) << "\n";
+		// std::cout << "Cam oren: " << glm::to_string(player.playerCamera.orientation) << "\n";
+		// std::cout << "mesh oren: " << glm::to_string(player.playerObj.orientation) << "\n";
 
 		glfwSwapBuffers(window);		// Swap the back buffer with the front buffer
 		glfwPollEvents();		// Take care of all GLFW events

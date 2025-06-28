@@ -5,11 +5,13 @@
 #include <glm/gtx/string_cast.hpp>
 
 Player::Player(int width, int height, Renderable playerMesh, float speed, glm::vec3 position)
-    : width(width), height(height), speed(speed), playerMesh(playerMesh),playerCamera(width, height, position + cameraOffset)
+    : width(width), height(height), speed(speed), playerObj(std::move(playerMesh)), playerCamera(width, height, position + cameraOffset)
 {
-    this->playerMesh.position = position;
-    this->playerMesh.orientation = glm::vec3(0.0f, 0.0f, 1.0f);
-    glm::vec3 viewDir = playerMesh.position - playerCamera.position;
+    playerObj.position = position;
+    playerObj.orientation = glm::vec3(0.0f, 0.0f, 1.0f);
+
+    playerObj.update();
+    glm::vec3 viewDir = playerObj.position - playerCamera.position;
     playerCamera.orientation = glm::normalize(glm::vec3(viewDir.x, viewDir.y, 0.0f));
     moveCamera();
 }
@@ -17,16 +19,12 @@ Player::Player(int width, int height, Renderable playerMesh, float speed, glm::v
 void Player::Inputs(GLFWwindow* window)
 {
     bool keyPressed = false;
-    glm::vec3& playerPosition = playerMesh.position;
+    glm::vec3& playerPosition = playerObj.position;
     glm::vec3& cameraPosition = playerCamera.position;
-    glm::vec3 playerOrientation = playerMesh.orientation;
+    glm::vec3 playerOrientation = playerObj.orientation;
     glm::vec3 cameraOrientation = playerCamera.orientation;
     glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::vec3 direction(0.0f, 0.0f, 0.0f);
-    // std::cout << "Camera Pos: " << glm::to_string(playerCamera.position)
-    //       << " | Camera Dir: " << glm::to_string(playerCamera.orientation)
-    //       << " | Player Pos: " << glm::to_string(playerMesh.position) << std::endl;
-    //           std::cout << "Offset length: " << glm::length(cameraOffset) << std::endl;
 
 
 
@@ -49,6 +47,7 @@ void Player::Inputs(GLFWwindow* window)
     }
 
     if (keyPressed && glm::length(direction) > 0.001f) {
+        playerObj.update();
         playerPosition += speed * glm::normalize(direction);
         moveCamera();
         std::cout << "player moved" << std::endl;
@@ -70,18 +69,25 @@ void Player::Inputs(GLFWwindow* window)
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         mouseLocked = false;
         firstClick = true;
+        playerObj.update();
     }
+
+
 }
 
 void Player::moveCamera()
 {
   // 1) fixed offset:
-  playerCamera.position = playerMesh.position + cameraOffset;
+  playerCamera.position = playerObj.position + cameraOffset;
 
   // 2) forward flat:
-  glm::vec3 forward = playerMesh.position - playerCamera.position;
+  glm::vec3 forward = playerObj.position - playerCamera.position;
   forward.y = 0.0f;
-  forward = glm::normalize(forward);
+
+  if (glm::length(forward) > 0.0001f)
+    forward = glm::normalize(forward);
+  else
+    forward = glm::vec3(0.0f, 0.0f, -1.0f); // fallback forward
 
   // 3) no‐roll basis:
   glm::vec3 worldUp  = glm::vec3(0,1,0);
