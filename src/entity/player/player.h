@@ -19,8 +19,8 @@ class Player
 
         Player(int width, int height, Renderable playerMesh, float speed = 0.1f, glm::vec3 position = {1.0f, 1.0f, 1.0f});
 
-        void Inputs(GLFWwindow* window);
-        void moveCamera();
+    glm::vec3 pollMovementInput(GLFWwindow* window);
+    void moveCamera();
     private:
 
 };

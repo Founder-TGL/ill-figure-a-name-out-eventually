@@ -1,4 +1,5 @@
 #define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 #include<iostream>
 #include<glad/glad.h>
 #include<glm/glm.hpp>
@@ -6,134 +7,90 @@
 #include<glm/gtc/type_ptr.hpp>
 #include<GLFW/glfw3.h>
 #include<filesystem>
-#include <glm/gtx/string_cast.hpp>
-
-
-
-
 #include"shaderClass.h"
 #include "shapeData.h"
 #include "Camera.h"
 #include "Renderable.h"
 #include "player.h"
+#include "Scene.h"
 
 #include <math.h>
 
-const static int width = 1000;
+const static int width = 1600;
 const static int height = 1000;
 
-int main()
-{
-	// Initialize GLFW
-	glfwInit();
+int main() {
+    // --- Init GLFW + window ---
+    if (!glfwInit()) return -1;
 
-	// Tell GLFW what version of OpenGL we are using 
-	// In this case we are using OpenGL 3.3
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// Tell GLFW we are using the CORE profile
-	// So that means we only have the modern functions
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	// Create a GLFWwindow object of 800 by 800 pixels, naming it "YoutubeOpenGL"
-	GLFWwindow* window = glfwCreateWindow(width, height, "OpenGL window ;3", NULL, NULL);
-	// Error check if the window fails to create
-	if (window == NULL)
-	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
-	// Introduce the window into the current context
-	glfwMakeContextCurrent(window);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    GLFWwindow* window = glfwCreateWindow(width, height, "OpenGL Window", NULL, NULL);
+    if (!window) {
+        std::cerr << "Failed to create window\n";
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(window);
+    gladLoadGL();
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
+    glViewport(0, 0, width, height);
+    glEnable(GL_DEPTH_TEST);
 
-	//Load GLAD so it configures OpenGL
-	gladLoadGL();
-	// Specify the viewport of OpenGL in the Window
-	// In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
-	glViewport(0, 0, width, height);
+    // --- Shader ---
+    Shader shaderProgram("entity/shaders/default.vert", "entity/shaders/default.frag");
 
-    //error checks the shader files (checks if the roots are coming from the right place /// the file must be run from main.cpp to function other wise crash time)
-    std::cout << "CWD at runtime: " << std::filesystem::current_path() << '\n';
-    std::filesystem::path shaderPath = std::filesystem::current_path() / "entity/shaders/default.frag";
-    if (!std::filesystem::exists(shaderPath)) {
-        std::cerr << "Shader not found: " << shaderPath << "\n";
-    }	
-    // Generates Shader object using shaders defualt.vert and default.frag
-	Shader shaderProgram("entity/shaders/default.vert", "entity/shaders/default.frag");
-
-	glEnable(GL_DEPTH_TEST);
-
-	Renderable pyramidMesh(pyramidVertices, pyramidVerticesSize, pyramidIndices, pyramidIndicesSize);
-	Renderable cubeMesh(cubeVertices, cubeVerticesSize, cubeIndices, cubeIndicesSize);
+    // --- Scene setup ---
+    Scene scene;
+    Renderable pyramid(pyramidVertices, pyramidVerticesSize, pyramidIndices, pyramidIndicesSize);
+    Renderable cube(cubeVertices, cubeVerticesSize, cubeIndices, cubeIndicesSize);
 	Renderable sphereMesh(sphereVertices, sphereVerticesSize, sphereIndices, sphereIndicesSize);
-	// Instantiate PhysicsObjects		
+    Player* player = new Player(width, height, pyramid, 0.01f, glm::vec3(0, 0, -2));
+    GameObject* cubeObj = new GameObject(cube);
+    cubeObj->setPosition(glm::vec3(1.5f, 0.0f, -2.0f));
+    cubeObj->update();
 
-	float time, currentTime = glfwGetTime();
+    scene.setPlayer(player);
+    scene.addObject(cubeObj);
 
-    Player player(width, height, pyramidMesh, 0.1f, glm::vec3(0.0f, 0.0f, -2.0f));
-	GameObject cubeObject(cubeMesh);
-	cubeObject.setPosition(glm::vec3(1.5f, 0.0f, -2.0f)); // or wherever you want the cube
-	cubeObject.setScale(glm::vec3(1.0f));
-	cubeObject.update();
+    // --- Main loop ---
+    float lastTime = glfwGetTime();
+    while (!glfwWindowShouldClose(window)) {
+        float currentTime = glfwGetTime();
+        float deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
 
-	float lastTime = glfwGetTime();
+        // Input
+        // player->Inputs(window);
+        if (player->mouseLocked) {
+            double mx, my;
+            glfwGetCursorPos(window, &mx, &my);
+            if (abs(mx - width / 2) > 50 || abs(my - height / 2) > 50)
+                glfwSetCursorPos(window, width / 2, height / 2);
+        }
 
+        // Update
+        scene.update(window);
 
+        // Render
+        glClearColor(0.0f, 0.0f, 0.01f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        shaderProgram.Activate();
+        player->playerCamera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix");
+        scene.draw(shaderProgram);
 
-	// Main while loop
-	while (!glfwWindowShouldClose(window))
-	{ 
-		float currentTime = glfwGetTime();
-		float deltaTime = currentTime - lastTime;
-		lastTime = currentTime;
+        // Swap + poll
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
 
-		if (player.mouseLocked)		//locks the mouse to the center of screen
-		{
-			double mouseX;
-            double mouseY;
-
-            glfwGetCursorPos(window, &mouseX, &mouseY);
-
-			if((mouseX < (width/2)-50) || (mouseX > (width/2)+50) || (mouseY < (height/2)-50) || (mouseY > (height/2)+50)){
-				glfwSetCursorPos(window, (width / 2), (height / 2));
-			}
-
-		}
-		
-		glClearColor(0.0f, 0.0f, 0.01f, 1.0f);		// Specify the color of the background
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Clean the back buffer and assign the new color to it
-		shaderProgram.Activate();		// Tell OpenGL which Shader Program we want to use
-
-		
-		// camera.Inputs(window);
-        player.Inputs(window);
-		player.playerCamera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix");
-
-		if (Hitbox::doOBBsIntersect(player.playerObj.getOBB(), cubeObject.getOBB())) {
-    		std::cout << "🎯 Collision detected between player and cube!\n";
-		}
-
-
-        player.playerObj.Draw(shaderProgram);
-        cubeObject.Draw(shaderProgram);
-
-		// std::cout << "Cam Pos: " << glm::to_string(player.playerCamera.position) << "\n";
-		// std::cout << "mesh Pos: " << glm::to_string(player.playerObj.position) << "\n";
-		// std::cout << "Cam oren: " << glm::to_string(player.playerCamera.orientation) << "\n";
-		// std::cout << "mesh oren: " << glm::to_string(player.playerObj.orientation) << "\n";
-
-		glfwSwapBuffers(window);		// Swap the back buffer with the front buffer
-		glfwPollEvents();		// Take care of all GLFW events
-	}
-
-
-
-	// Delete all the objects we've created
-	shaderProgram.Delete();
-	glfwDestroyWindow(window);
-	glfwTerminate();
-	return 0;
-
+    // Cleanup
+    delete cubeObj;
+    delete player;
+    shaderProgram.Delete();
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    return 0;
 }
+
