@@ -14,6 +14,7 @@
                 "-I${workspaceFolder}/src/entity/renderable",
                 "-I${workspaceFolder}/src/entity/camera",
                 "-I${workspaceFolder}/src/entity/shaders",
+                "-I${workspaceFolder}/src/entity/player",
                 "${workspaceFolder}/src/entity/shaders/shaderClass.cpp",
                 "${workspaceFolder}/src/entity/renderable/VAO.cpp",
                 "${workspaceFolder}/src/entity/renderable/VBO.cpp",
@@ -21,6 +22,7 @@
                 "${workspaceFolder}/src/entity/renderable/Renderable.cpp",
                 "${workspaceFolder}/src/entity/renderable/shapeData.cpp",
                 "${workspaceFolder}/src/entity/camera/Camera.cpp",
+                "${workspaceFolder}/src/entity/player/player.cpp",
 
 
 

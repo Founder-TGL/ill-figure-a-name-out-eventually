@@ -10,12 +10,10 @@
 
 
 #include"shaderClass.h"
-#include"VAO.h"
-#include"VBO.h"
-#include"EBO.h"
 #include "shapeData.h"
 #include "Camera.h"
 #include "Renderable.h"
+#include "player.h"
 
 #include <math.h>
 
@@ -46,6 +44,7 @@ int main()
 	}
 	// Introduce the window into the current context
 	glfwMakeContextCurrent(window);
+    glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
 
 	//Load GLAD so it configures OpenGL
 	gladLoadGL();
@@ -71,11 +70,10 @@ int main()
 
 	float time, currentTime = glfwGetTime();
 
-
-	Camera camera(width, height, glm::vec3(0.0f, 1.0f, 2.0f));
-	camera.pyramidRenderable = &pyramidMesh;
-	camera.cubeRenderable = &cubeMesh;
-	camera.sphereRenderable = &sphereMesh;
+    Player player(width, height, pyramidMesh, glm::vec3(0.0f, 0.0f, -2.0f));
+	// camera.pyramidRenderable = &pyramidMesh;
+	// camera.cubeRenderable = &cubeMesh;
+	// camera.sphereRenderable = &sphereMesh;
 
 
 	float lastTime = glfwGetTime();
@@ -89,17 +87,18 @@ int main()
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 
-		if (!camera.paused)		//pauses the simmulation
-		{
+		// if (!camera.paused)		//pauses the simmulation
+		// {
 			
-		}
-		if (camera.mouseLocked )		//locks the mouse to the center of screen
+		// }
+		if (player.mouseLocked)		//locks the mouse to the center of screen
 		{
 			double mouseX;
             double mouseY;
+
             glfwGetCursorPos(window, &mouseX, &mouseY);
-			if((mouseX < (width/2)-50) || (mouseX > (width/2)+50) || (mouseY < (height/2)-50) || (mouseY > (height/2)+50))
-            {
+
+			if((mouseX < (width/2)-50) || (mouseX > (width/2)+50) || (mouseY < (height/2)-50) || (mouseY > (height/2)+50)){
 				glfwSetCursorPos(window, (width / 2), (height / 2));
 			}
 
@@ -110,15 +109,17 @@ int main()
 		shaderProgram.Activate();		// Tell OpenGL which Shader Program we want to use
 
 		
-		camera.Inputs(window);
-		camera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix");
+		// camera.Inputs(window);
+        player.Inputs(window);
+		player.playerCamera.Matrix(45.0f, 0.1f, 1000.0f, shaderProgram, "camMatrix");
 
 		glm::mat4 model = glm::mat4(1.0f);
 		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 		// glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);		//sets the draw to be solid object (as its set else for the spacetime grid)
 
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        cubeMesh.Draw();
+        // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        player.playerMesh.Draw(shaderProgram);
+        cubeMesh.Draw(shaderProgram);
 
 		glfwSwapBuffers(window);		// Swap the back buffer with the front buffer
 		glfwPollEvents();		// Take care of all GLFW events
