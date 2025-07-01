@@ -39,7 +39,7 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     // --- Shader ---
-    Shader shaderProgram("entity/shaders/default.vert", "entity/shaders/default.frag");
+    Shader shaderProgram("src/entity/shaders/default.vert", "src/entity/shaders/default.frag");
 
     // --- Scene setup ---
     Scene scene;
